@@ -5,6 +5,7 @@
 #include "inputs.h"
 #include "funciones.h"
 #include "validaciones.h"
+#include "especialidadYdiagnostico.h"
 
 #define GRIPEA 1
 #define COVID19 2
@@ -33,7 +34,8 @@ sConsulta cargarConsulta(sConsulta consultas[],int tamanio,int ids)
 	//inicialiazacion de datos
 	consultaAuxiliar.estado = 1;
 	consultaAuxiliar.idConsulta = ids;
-	consultaAuxiliar.diagnostico.idDiagnostico = 0;
+	consultaAuxiliar.idDiagnostico = -1;
+	consultaAuxiliar.idMedico = -1;
 
 return consultaAuxiliar;
 }
@@ -219,7 +221,7 @@ void CancerlarConsulta(sConsulta consultas[],int tamanio)
 
 // DIAGNOSTICAR
 
-void Diagnosticar(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos)
+void Diagnosticar(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos, sDiagnostico diagnosticos[])
 {
 	int idMedicoIngresado;
 	int idConsultaDiagnostico;
@@ -248,7 +250,7 @@ void Diagnosticar(sConsulta consultas[],int tamanio,sMedico medicos[],int tamani
 	{
 		if(consultas[i].estado == 1)
 		{
-			if(consultas[i].diagnostico.idDiagnostico == 0)
+			if(consultas[i].idDiagnostico == 0)
 			{
 				printf("%d  %s \n",consultas[i].idConsulta,consultas[i].nombrePaciente);
 			}
@@ -256,11 +258,15 @@ void Diagnosticar(sConsulta consultas[],int tamanio,sMedico medicos[],int tamani
 	}
 	idConsultaDiagnostico = GetInt("Consulta a diagnosticar:");
 
-	printf("Ingrese alguno de los siguientes diagnosticos: \n");
-	printf("1. Gripe A \n");
-	printf("2. Covid-19 \n");
-	printf("3. Pre infarto \n");
-	diagnosticoIngresado = GetInt("Diagnostico seleccionado: ");
+	do
+	{
+		printf("Ingrese alguno de los siguientes diagnosticos: \n");
+		printf("1. Gripe A \n");
+		printf("2. Covid-19 \n");
+		printf("3. Pre infarto \n");
+		diagnosticoIngresado = GetInt("Diagnostico seleccionado: ");
+
+	} while (diagnosticoIngresado < 1 || diagnosticoIngresado > 3);
 
 	int i;
 	for( i = 0; i<tamanio; i++)
@@ -268,19 +274,7 @@ void Diagnosticar(sConsulta consultas[],int tamanio,sMedico medicos[],int tamani
 		if(consultas[i].idConsulta == idConsultaDiagnostico)
 		{
 			consultas[i].idMedico = idMedicoIngresado;
-			consultas[i].diagnostico.idDiagnostico = diagnosticoIngresado;
-			switch(diagnosticoIngresado)
-			{
-			case 1:
-				strcpy(consultas[i].diagnostico.descripcion, "Gripe A");
-				break;
-			case 2:
-				strcpy(consultas[i].diagnostico.descripcion, "Covid-19");
-				break;
-			case 3:
-				strcpy(consultas[i].diagnostico.descripcion, "Pre infarto");
-				break;
-			}
+			consultas[i].idDiagnostico = diagnosticoIngresado;
 			medicos[posicionMedico].cantidadConsultas++;
 			break;
 		}
@@ -290,7 +284,7 @@ void Diagnosticar(sConsulta consultas[],int tamanio,sMedico medicos[],int tamani
 
 // LISTAS
 
-void MenuListar(sConsulta consultas[],int tamanio ,sMedico medicos[],int tamanioMedicos, sEspecialidad especialidades[],int tamanioEspecialidades, sHospital hospitales[], int tamaniohospitales)
+void MenuListar(sConsulta consultas[],int tamanio ,sMedico medicos[],int tamanioMedicos, sEspecialidad especialidades[],int tamanioEspecialidades, sHospital hospitales[], int tamaniohospitales, sDiagnostico diagnosticos[])
 {
 	char opcion;
 
@@ -321,28 +315,28 @@ void MenuListar(sConsulta consultas[],int tamanio ,sMedico medicos[],int tamanio
 	switch(opcion)
 	{
 	case 'a':
-		ListarTodosMedicos(medicos,tamanioMedicos);
+		ListarTodosMedicos(medicos,tamanioMedicos,especialidades, tamanioEspecialidades);
 		break;
 	case 'b':
 		ListarTodasConsultas(consultas,tamanio);
 		break;
 	case 'c':
-		ListarTodosMedicosConConsulta(consultas,tamanio,medicos,tamanioMedicos);
+		ListarTodosMedicosConConsulta(consultas,tamanio,medicos,tamanioMedicos,especialidades, tamanioEspecialidades,diagnosticos);
 		break;
 	case 'd':
 		ConsultasPorFecha(consultas,tamanio);
 		break;
 	case 'e':
-		ConsultasYaDiagnosticadas(consultas,tamanio);
+		ConsultasYaDiagnosticadas(consultas,tamanio,diagnosticos);
 		break;
 	case 'f':
-		CasosCovid19DesdeInicioDePandemia(consultas,tamanio,medicos,tamanioMedicos);
+		CasosCovid19DesdeInicioDePandemia(consultas,tamanio,medicos,tamanioMedicos,especialidades, tamanioEspecialidades,diagnosticos);
 		break;
 	case 'g':
-		ConsultasOrdenadoEspecialidad(consultas,tamanio,medicos,tamanioMedicos);
+		ConsultasOrdenadoEspecialidad(consultas,tamanio,medicos,tamanioMedicos,especialidades, tamanioEspecialidades,diagnosticos);
 		break;
 	case 'h':
-		ConsultasEntreMesesEspecialidad(consultas,tamanio,medicos,tamanioMedicos,4,7);
+		ConsultasEntreMesesEspecialidad(consultas,tamanio,medicos,tamanioMedicos,4,7,especialidades, tamanioEspecialidades,diagnosticos);
 		break;
 	case 'i':
 		PorcentajeConsultasPorMedico(consultas,tamanio,medicos,tamanioMedicos);
@@ -357,19 +351,19 @@ void MenuListar(sConsulta consultas[],int tamanio ,sMedico medicos[],int tamanio
 		MostrarHospitalesYMedicos(hospitales,tamaniohospitales);
 		break;
 	case 'm':
-		MostrarConsultasHospital(consultas,tamanio,medicos,tamanioMedicos,hospitales,tamaniohospitales);
+		MostrarConsultasHospital(consultas,tamanio,medicos,tamanioMedicos,hospitales,tamaniohospitales,diagnosticos);
 		break;
 	}
 
 }
 
-void ListarTodosMedicos(sMedico medicos[],int tamanioMedicos)
+void ListarTodosMedicos(sMedico medicos[],int tamanioMedicos,sEspecialidad especialidades[],int tamanioEspecialidades)
 {
 	for(int i = 0; i<tamanioMedicos;i++)
 	{
 		if(medicos[i].estado == 1)
 		{
-			printf("%-20s %s \n",medicos[i].nombre,medicos[i].especialidad.descripcion);
+			printf("%-20s %s \n",medicos[i].nombre,obtenerEspecialidad(medicos[i], especialidades, tamanioEspecialidades));
 		}
 	}
 }
@@ -385,18 +379,18 @@ void ListarTodasConsultas(sConsulta consultas[],int tamanio)
 	}
 }
 
-void ListarTodosMedicosConConsulta(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos)
+void ListarTodosMedicosConConsulta(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos,sEspecialidad especialidades[],int tamanioEspecialidades,sDiagnostico diagnosticos[])
 {
 	for(int i = 0; i<tamanioMedicos;i++)
 	{
 		if(medicos[i].cantidadConsultas >0)
 		{
-			printf("%-20s %-20s \n",medicos[i].nombre,medicos[i].especialidad.descripcion);
+			printf("%-20s %-20s \n",medicos[i].nombre,obtenerEspecialidad(medicos[i], especialidades, tamanioEspecialidades));
 			for(int j = 0;j<tamanio;j++)
 			{
 				if(medicos[i].idMedico == consultas[j].idMedico)
 				{
-					printf("%20s %4d/%d/%d %6s\n",consultas[j].nombrePaciente,consultas[j].fechaDeAtencion.dia,consultas[j].fechaDeAtencion.mes,consultas[j].fechaDeAtencion.anio,consultas[j].diagnostico.descripcion);
+					printf("%20s %4d/%d/%d %6s\n",consultas[j].nombrePaciente,consultas[j].fechaDeAtencion.dia,consultas[j].fechaDeAtencion.mes,consultas[j].fechaDeAtencion.anio,obtenerDiagnostico(consultas[j], diagnosticos));
 				}
 			}
 		}
@@ -448,21 +442,21 @@ void ConsultasPorFecha(sConsulta consultas[],int tamanio)
 
 }
 
-void ConsultasYaDiagnosticadas(sConsulta consultas[],int tamanio)
+void ConsultasYaDiagnosticadas(sConsulta consultas[],int tamanio, sDiagnostico diagnosticos[])
 {
 	for(int i = 0; i<tamanio;i++)
 	{
 		if(consultas[i].estado == 1)
 		{
-			if(consultas[i].diagnostico.idDiagnostico != 0)
+			if(consultas[i].idDiagnostico != -1)
 			{
-				printf("%s %4d/%d/%d %4s\n",consultas[i].nombrePaciente,consultas[i].fechaDeAtencion.dia,consultas[i].fechaDeAtencion.mes,consultas[i].fechaDeAtencion.anio,consultas[i].diagnostico.descripcion);
+				printf("%s %4d/%d/%d %4s\n",consultas[i].nombrePaciente,consultas[i].fechaDeAtencion.dia,consultas[i].fechaDeAtencion.mes,consultas[i].fechaDeAtencion.anio,obtenerDiagnostico(consultas[i], diagnosticos));
 			}
 		}
 	}
 }
 
-void CasosCovid19DesdeInicioDePandemia(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos)
+void CasosCovid19DesdeInicioDePandemia(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos,sEspecialidad especialidades[],int tamanioEspecialidades,sDiagnostico diagnosticos[])
 {
 	char especialidadIngresada[21];
 	printf("Ingrese la especialdad \n");
@@ -476,11 +470,11 @@ void CasosCovid19DesdeInicioDePandemia(sConsulta consultas[],int tamanio,sMedico
 		{
 			for(int j = 0; j<tamanioMedicos;j++)
 			{
-				if(consultas[i].idMedico == medicos[j].idMedico && strcmp(medicos[j].especialidad.descripcion,especialidadIngresada) == 0)
+				if(consultas[i].idMedico == medicos[j].idMedico && strcmp(obtenerEspecialidad(medicos[j], especialidades, tamanioEspecialidades),especialidadIngresada) == 0)
 				{
 					if(consultas[i].fechaDeAtencion.anio>2020)
 					{
-						printf("%s %4d/%d/%d %4s\n",consultas[i].nombrePaciente,consultas[i].fechaDeAtencion.dia,consultas[i].fechaDeAtencion.mes,consultas[i].fechaDeAtencion.anio,consultas[i].diagnostico.descripcion);
+						printf("%s %4d/%d/%d %4s\n",consultas[i].nombrePaciente,consultas[i].fechaDeAtencion.dia,consultas[i].fechaDeAtencion.mes,consultas[i].fechaDeAtencion.anio,obtenerDiagnostico(consultas[i], diagnosticos));
 					}
 					else
 					{
@@ -488,7 +482,7 @@ void CasosCovid19DesdeInicioDePandemia(sConsulta consultas[],int tamanio,sMedico
 						{
 							if(consultas[i].fechaDeAtencion.mes > 3)
 							{
-								printf("%s %4d/%d/%d %4s\n",consultas[i].nombrePaciente,consultas[i].fechaDeAtencion.dia,consultas[i].fechaDeAtencion.mes,consultas[i].fechaDeAtencion.anio,consultas[i].diagnostico.descripcion);
+								printf("%s %4d/%d/%d %4s\n",consultas[i].nombrePaciente,consultas[i].fechaDeAtencion.dia,consultas[i].fechaDeAtencion.mes,consultas[i].fechaDeAtencion.anio,obtenerDiagnostico(consultas[i], diagnosticos));
 							}
 							else
 							{
@@ -496,7 +490,7 @@ void CasosCovid19DesdeInicioDePandemia(sConsulta consultas[],int tamanio,sMedico
 								{
 									if(consultas[i].fechaDeAtencion.dia > 2)
 									{
-										printf("%s %4d/%d/%d %4s\n",consultas[i].nombrePaciente,consultas[i].fechaDeAtencion.dia,consultas[i].fechaDeAtencion.mes,consultas[i].fechaDeAtencion.anio,consultas[i].diagnostico.descripcion);
+										printf("%s %4d/%d/%d %4s\n",consultas[i].nombrePaciente,consultas[i].fechaDeAtencion.dia,consultas[i].fechaDeAtencion.mes,consultas[i].fechaDeAtencion.anio,obtenerDiagnostico(consultas[i], diagnosticos));
 									}
 								}
 							}
@@ -508,7 +502,7 @@ void CasosCovid19DesdeInicioDePandemia(sConsulta consultas[],int tamanio,sMedico
 	}
 }
 
-void ConsultasOrdenadoEspecialidad(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos)
+void ConsultasOrdenadoEspecialidad(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos,sEspecialidad especialidades[],int tamanioEspecialidades,sDiagnostico diagnosticos[])
 {
 	sMedico medicoAuxiliar;
 
@@ -516,7 +510,7 @@ void ConsultasOrdenadoEspecialidad(sConsulta consultas[],int tamanio,sMedico med
 	{
 		for(int j = i+1;j<tamanioMedicos;j++)
 		{
-			if(strcmp(medicos[i].especialidad.descripcion,medicos[j].especialidad.descripcion)>0)
+			if(strcmp(obtenerEspecialidad(medicos[i], especialidades, tamanioEspecialidades),obtenerEspecialidad(medicos[j], especialidades, tamanioEspecialidades))>0)
 			{
 				medicoAuxiliar = medicos[i];
 				medicos[i] = medicos[j];
@@ -531,14 +525,14 @@ void ConsultasOrdenadoEspecialidad(sConsulta consultas[],int tamanio,sMedico med
 		{
 			if(medicos[i].idMedico == consultas[j].idMedico)
 			{
-				printf("%s %10s %4d/%d/%d %4s\n",consultas[j].nombrePaciente,medicos[i].especialidad.descripcion,consultas[j].fechaDeAtencion.dia,consultas[j].fechaDeAtencion.mes,consultas[j].fechaDeAtencion.anio,consultas[j].diagnostico.descripcion);
+				printf("%s %10s %4d/%d/%d %4s\n",consultas[j].nombrePaciente,obtenerEspecialidad(medicos[i], especialidades, tamanioEspecialidades),consultas[j].fechaDeAtencion.dia,consultas[j].fechaDeAtencion.mes,consultas[j].fechaDeAtencion.anio,obtenerDiagnostico(consultas[j], diagnosticos));
 			}
 		}
 	}
 }
 
 
-void ConsultasEntreMesesEspecialidad(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos,int mes1, int mes2)
+void ConsultasEntreMesesEspecialidad(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos,int mes1, int mes2,sEspecialidad especialidades[],int tamanioEspecialidades,sDiagnostico diagnosticos[])
 {
 	char especialidadIngresada[21];
 	printf("Ingrese la especialdad \n");
@@ -548,7 +542,7 @@ void ConsultasEntreMesesEspecialidad(sConsulta consultas[],int tamanio,sMedico m
 
 	for(int i=0;i<tamanioMedicos;i++)
 	{
-		if(strcmp(medicos[i].especialidad.descripcion,especialidadIngresada)==0)
+		if(strcmp(obtenerEspecialidad(medicos[i], especialidades, tamanioEspecialidades),especialidadIngresada)==0)
 		{
 			for(int j = 0;j<tamanio;j++)
 			{
@@ -556,7 +550,7 @@ void ConsultasEntreMesesEspecialidad(sConsulta consultas[],int tamanio,sMedico m
 				{
 					if(consultas[j].fechaDeAtencion.mes >= mes1 && consultas[j].fechaDeAtencion.mes <= mes2)
 					{
-						printf("%s %10s %4d/%d/%d %4s\n",consultas[j].nombrePaciente,medicos[i].especialidad.descripcion,consultas[j].fechaDeAtencion.dia,consultas[j].fechaDeAtencion.mes,consultas[j].fechaDeAtencion.anio,consultas[j].diagnostico.descripcion);
+						printf("%s %10s %4d/%d/%d %4s\n",consultas[j].nombrePaciente,obtenerEspecialidad(medicos[i], especialidades, tamanioEspecialidades),consultas[j].fechaDeAtencion.dia,consultas[j].fechaDeAtencion.mes,consultas[j].fechaDeAtencion.anio,obtenerDiagnostico(consultas[j], diagnosticos));
 					}
 				}
 			}
@@ -596,7 +590,7 @@ void EnfermedadMenosDiagnosticada(sConsulta consultas[],int tamanio)
 
 	for(int i = 0; i<tamanio;i++)
 	{
-		switch(consultas[i].diagnostico.idDiagnostico)
+		switch(consultas[i].idDiagnostico)
 		{
 		case 1:
 			contadorGripeA++;
@@ -647,7 +641,7 @@ void EspecialidadMasEstudiada(sMedico medicos[],int tamanioMedicos, sEspecialida
 		auxiliar = 0;
 		for(int j = 0; j<tamanioMedicos; j++)
 		{
-			if(medicos[j].especialidad.idEspecialidad == especialidades[i].idEspecialidad)
+			if(medicos[j].idEspecialidad == especialidades[i].idEspecialidad)
 			{
 				auxiliar++;
 			}
@@ -671,7 +665,7 @@ void MostrarHospitalesYMedicos(sHospital hospitales[], int tamaniohospitales)
 	}
 }
 
-void MostrarConsultasHospital(sConsulta consultas[],int tamanio ,sMedico medicos[],int tamanioMedicos, sHospital hospitales[], int tamaniohospitales)
+void MostrarConsultasHospital(sConsulta consultas[],int tamanio ,sMedico medicos[],int tamanioMedicos, sHospital hospitales[], int tamaniohospitales,sDiagnostico diagnosticos[])
 {
 	for(int i = 0; i<tamaniohospitales;i++)
 	{
@@ -685,7 +679,7 @@ void MostrarConsultasHospital(sConsulta consultas[],int tamanio ,sMedico medicos
 				{
 					if(medicos[j].idMedico == consultas[l].idMedico)
 					{
-						printf("%20s %4d/%d/%d %4s\n",consultas[l].nombrePaciente,consultas[l].fechaDeAtencion.dia,consultas[l].fechaDeAtencion.mes,consultas[l].fechaDeAtencion.anio,consultas[l].diagnostico.descripcion);
+						printf("%20s %4d/%d/%d %4s\n",consultas[l].nombrePaciente,consultas[l].fechaDeAtencion.dia,consultas[l].fechaDeAtencion.mes,consultas[l].fechaDeAtencion.anio,obtenerDiagnostico(consultas[l], diagnosticos));
 					}
 				}
 			}

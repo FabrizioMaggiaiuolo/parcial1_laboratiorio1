@@ -12,6 +12,7 @@ Instancia 2
 #include "inputs.h"
 #include "funciones.h"
 #include "validaciones.h"
+#include "especialidadYdiagnostico.h"
 
 #define CANTIDADMEDICOS 5
 #define CANTIDADCONSULTAS 10
@@ -31,6 +32,12 @@ int main(void) {
 
 	int salir = 0;
 
+	sDiagnostico diagnosticos[3] = {
+			{0,"Gripe A"},
+			{1,"Covid-19"},
+			{2,"Pre infarto"}
+	};
+
 	sHospital hospitales[CANTIDADHOSPITALES] = {
 			{0,"Hospital Italiano",3},
 			{1,"Hospital Aleman",2}
@@ -45,11 +52,11 @@ int main(void) {
 	};
 
 	sMedico medicos[CANTIDADMEDICOS] = {
-			{ 0, "Leandro", especialidades[0],0, 1 ,0 },
-			{ 1,"Martin", especialidades[0],0, 1 ,0 },
-			{ 2, "Nicolas", especialidades[2],0, 1 ,0 },
-			{ 3, "Florencia", especialidades[3],0, 1 ,1 },
-			{ 4, "German", especialidades[4],0, 1 ,1 }
+			{ 0, "Leandro", 0,0, 1 ,0 },
+			{ 1,"Martin", 0,0, 1 ,0 },
+			{ 2, "Nicolas", 2,0, 1 ,0 },
+			{ 3, "Florencia", 3,0, 1 ,1 },
+			{ 4, "German", 4,0, 1 ,1 }
 	};
 
 	sConsulta consultas[CANTIDADCONSULTAS];
@@ -58,7 +65,6 @@ int main(void) {
 		consultas[i].idConsulta = 1000+i;
 		consultas[i].idMedico = 1000+i;
 	}
-
 
 	while (salir == 0) {
 		int respuesta;
@@ -115,7 +121,7 @@ int main(void) {
 			 }
 			 else
 			 {
-				 Diagnosticar(consultas, CANTIDADCONSULTAS,medicos,CANTIDADMEDICOS);
+				 Diagnosticar(consultas, CANTIDADCONSULTAS,medicos,CANTIDADMEDICOS,diagnosticos);
 			 }
 			 break;
 		 case 5:
@@ -125,7 +131,7 @@ int main(void) {
 			 }
 			 else
 			 {
-				 MenuListar(consultas, CANTIDADCONSULTAS, medicos,CANTIDADMEDICOS, especialidades, CANTIDADESPECIALIDADES, hospitales, CANTIDADHOSPITALES);
+				 MenuListar(consultas, CANTIDADCONSULTAS, medicos,CANTIDADMEDICOS, especialidades, CANTIDADESPECIALIDADES, hospitales, CANTIDADHOSPITALES,diagnosticos);
 			 }
 			 break;
 		case 6:

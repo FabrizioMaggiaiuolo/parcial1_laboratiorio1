@@ -19,14 +19,14 @@ typedef struct {
 	int idMedico;
 	char nombrePaciente[52];
 	sFecha fechaDeAtencion;
-	sDiagnostico diagnostico;
+	int idDiagnostico;
 	int estado;
 
 } sConsulta;
 
 typedef struct {
 	int idHospital;
-	char nombre[20];
+	char nombre[52];
 	int cantidadDeMedicos;
 
 } sHospital;
@@ -40,7 +40,7 @@ typedef struct {
 typedef struct {
 	int idMedico;
 	char nombre[52];
-	sEspecialidad especialidad;
+	int idEspecialidad;
 	int cantidadConsultas;
 	int estado;
 	int idHospital;
@@ -84,48 +84,52 @@ void CancerlarConsulta(sConsulta consultas[],int tamanio);
 
 //4
 /// \brief Se le asigna un diagnostico y medico a una consulta
-void Diagnosticar(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos);
+void Diagnosticar(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos, sDiagnostico diagnosticos[]);
 
 //5
 /// \brief Lista del menu de posibles listas
-void MenuListar(sConsulta consultas[], int tamanio ,sMedico medicos[],int tamanioMedicos, sEspecialidad especialidades[], int cantidadEspecialidades, sHospital hospitales[], int tamaniohospitales);
+void MenuListar(sConsulta consultas[], int tamanio ,sMedico medicos[],int tamanioMedicos, sEspecialidad especialidades[], int cantidadEspecialidades, sHospital hospitales[], int tamaniohospitales, sDiagnostico diagnosticos[]);
 
 /// \brief Lista de todos los medicos
-void ListarTodosMedicos(sMedico medicos[],int tamanioMedicos);
+void ListarTodosMedicos(sMedico medicos[],int tamanioMedicos,sEspecialidad especialidades[],int tamanioEspecialidades);
 
 /// \brief Lista de todas las consultas
 void ListarTodasConsultas(sConsulta consultas[],int tamanio);
 
 /// \brief Lista de todos los medicos con sus consultas
-void ListarTodosMedicosConConsulta(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos);
+void ListarTodosMedicosConConsulta(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos,sEspecialidad especialidades[],int tamanioEspecialidades,sDiagnostico diagnosticos[]);
 
 /// \brief Lista de las consultas ordenas de la fecha mas cercana a las mas antigua
 void ConsultasPorFecha(sConsulta consultas[],int tamanio);
 
 /// \brief Lista de las consultas ya diagnosticadas
-void ConsultasYaDiagnosticadas(sConsulta consultas[],int tamanio);
+void ConsultasYaDiagnosticadas(sConsulta consultas[],int tamanio,sDiagnostico diagnosticos[]);
 
 /// \brief Lista de todas las consultas desde el incio de la pandemia con el diagnostico Covid-19
-void CasosCovid19DesdeInicioDePandemia(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos);
+void CasosCovid19DesdeInicioDePandemia(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos,sEspecialidad especialidades[],int tamanioEspecialidades,sDiagnostico diagnosticos[]);
 
 /// \brief Lista de las consultas ordenas alfabeticamente por especialidad del medico
-void ConsultasOrdenadoEspecialidad(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos);
+void ConsultasOrdenadoEspecialidad(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos,sEspecialidad especialidades[],int tamanioEspecialidades,sDiagnostico diagnosticos[]);
 
 /// \brief Lista de las consultas entre 2 meses
 /// \param num1 El mes mas chico a comparar
 /// \param num2 El mes mas grande a comparar
-void ConsultasEntreMesesEspecialidad(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos,int mes1, int mes2);
+void ConsultasEntreMesesEspecialidad(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos,int mes1, int mes2,sEspecialidad especialidades[],int tamanioEspecialidades,sDiagnostico diagnosticos[]);
 
 /// \brief Lista de los porcentajes de consultas de cada medico
 void PorcentajeConsultasPorMedico(sConsulta consultas[],int tamanio,sMedico medicos[],int tamanioMedicos);
 
+/// \brief La enfermedad menos diagnosticada
 void EnfermedadMenosDiagnosticada(sConsulta consultas[],int tamanio);
 
+/// \brief La especialidad mas estudiada
 void EspecialidadMasEstudiada(sMedico medicos[],int tamanioMedicos, sEspecialidad especialidades[],int tamanioEspecialidades);
 
+/// \brief Muestra los hospitales y la cantidad de medicos que hay en ellos
 void MostrarHospitalesYMedicos(sHospital hospitales[], int tamaniohospitales);
 
-void MostrarConsultasHospital(sConsulta consultas[],int tamanio ,sMedico medicos[],int tamanioMedicos, sHospital hospitales[], int tamaniohospitales);
+/// \brief Muesta el nombre del hospital con las consultas diagnosticadas
+void MostrarConsultasHospital(sConsulta consultas[],int tamanio ,sMedico medicos[],int tamanioMedicos, sHospital hospitales[], int tamaniohospitales,sDiagnostico diagnosticos[]);
 
 #endif /* FUNCIONES_H_ */
 

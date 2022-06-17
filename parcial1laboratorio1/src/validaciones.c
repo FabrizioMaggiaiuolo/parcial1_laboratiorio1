@@ -6,8 +6,8 @@
 #include "validaciones.h"
 
 #define ANIOACTUAL 2022
-#define MESACTUAL 5
-#define DIAACTUAL 8
+#define MESACTUAL 6
+#define DIAACTUAL 17
 
 int ValidarNombre(char nombre[])
 {
@@ -28,7 +28,7 @@ int ValidarAnio(int anio)
 	int index;
 	index = 0;
 
-	if(anio<2000 || anio>ANIOACTUAL)
+	if(anio<ANIOACTUAL || anio>2050)
 	{
 		index = 1;
 	}
@@ -102,7 +102,7 @@ int ValidarDia(int anio, int mes,int dia)
 			{
 				if(mes == MESACTUAL)
 				{
-					if(dia > DIAACTUAL)
+					if(dia < DIAACTUAL)
 					{
 						index = 1;
 					}
