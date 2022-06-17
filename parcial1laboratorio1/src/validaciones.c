@@ -28,7 +28,7 @@ int ValidarAnio(int anio)
 	int index;
 	index = 0;
 
-	if(anio<ANIOACTUAL || anio>2050)
+	if(anio<2000 || anio>2050)
 	{
 		index = 1;
 	}
@@ -44,16 +44,6 @@ int ValidarMes(int anio, int mes)
 	if(mes<1 || mes > 12)
 	{
 		index = 1;
-	}
-	else
-	{
-		if(anio == ANIOACTUAL)
-		{
-			if(mes < MESACTUAL)
-			{
-				index = 1;
-			}
-		}
 	}
 
 	return index;
@@ -94,20 +84,6 @@ int ValidarDia(int anio, int mes,int dia)
 				index = 1;
 			}
 			break;
-		}
-
-		if(index != 1)
-		{
-			if(anio == ANIOACTUAL)
-			{
-				if(mes == MESACTUAL)
-				{
-					if(dia < DIAACTUAL)
-					{
-						index = 1;
-					}
-				}
-			}
 		}
 
 	return index;

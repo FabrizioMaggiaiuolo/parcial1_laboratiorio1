@@ -104,6 +104,14 @@ void MenuModificarConsulta(sConsulta consultas[],int tamanio)
 	estadoConsulta = 0;
 	idConsultaIngresada = -1;
 
+	for(int i = 0; i<tamanio; i++)
+	{
+		if(consultas[i].estado == 1)
+		{
+			printf("%d  %s \n",consultas[i].idConsulta,consultas[i].nombrePaciente);
+		}
+	}
+
 	do
 	{
 		idConsultaIngresada = GetInt("Ingrese el id de la consulta");
@@ -238,6 +246,8 @@ void Diagnosticar(sConsulta consultas[],int tamanio,sMedico medicos[],int tamani
 	int diagnosticoIngresado;
 	int posicionMedico;
 
+	int estadoConsulta;
+
 	//verificar
 	do
 	{
@@ -260,13 +270,17 @@ void Diagnosticar(sConsulta consultas[],int tamanio,sMedico medicos[],int tamani
 	{
 		if(consultas[i].estado == 1)
 		{
-			if(consultas[i].idDiagnostico == 0)
-			{
-				printf("%d  %s \n",consultas[i].idConsulta,consultas[i].nombrePaciente);
-			}
+			printf("%d  %s \n",consultas[i].idConsulta,consultas[i].nombrePaciente);
 		}
 	}
-	idConsultaDiagnostico = GetInt("Consulta a diagnosticar:");
+
+	do
+	{
+		idConsultaDiagnostico = GetInt("Consulta a diagnosticar:");
+		idConsultaDiagnostico = ValidarExistenciaConsulta(idConsultaDiagnostico,consultas,tamanio);
+		estadoConsulta = ValidarEstadoDeConsulta(idConsultaDiagnostico,estadoConsulta,consultas,tamanio);
+
+	} while(idConsultaDiagnostico == -1 || estadoConsulta == 0);
 
 	do
 	{
