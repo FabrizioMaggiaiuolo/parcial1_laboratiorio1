@@ -70,7 +70,6 @@ int main(void) {
 		int respuesta;
 
 		printf("\n");
-		printf("\n");
 
 		printf("Ingrese una de las siguientes opciones: \n");
 		printf("1. ALTA CONSULTA \n");
@@ -81,7 +80,6 @@ int main(void) {
 		printf("6. SALIR \n");
 		respuesta = GetInt("Opcion que desea ingresar:");
 
-		printf("\n");
 		printf("\n");
 
 		switch (respuesta) {

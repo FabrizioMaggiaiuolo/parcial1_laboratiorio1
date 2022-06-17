@@ -204,6 +204,16 @@ void CancerlarConsulta(sConsulta consultas[],int tamanio)
 	estadoConsulta = 0;
 	idConsultaIngresada = -1;
 
+	for(int i = 0; i<tamanio; i++)
+	{
+		if(consultas[i].estado == 1)
+		{
+			printf("%d  %s \n",consultas[i].idConsulta,consultas[i].nombrePaciente);
+		}
+	}
+
+	printf("\n");
+
 	do
 	{
 		idConsultaIngresada = GetInt("Ingrese el id de la consulta");
@@ -289,7 +299,6 @@ void MenuListar(sConsulta consultas[],int tamanio ,sMedico medicos[],int tamanio
 	char opcion;
 
 	printf("\n");
-	printf("\n");
 
 	printf("Elija una de las siguientes opciones: \n");
 	printf("a. Todos los médicos.\n");
@@ -309,7 +318,6 @@ void MenuListar(sConsulta consultas[],int tamanio ,sMedico medicos[],int tamanio
 	fflush(stdin);
 	scanf("%c",&opcion);
 
-	printf("\n");
 	printf("\n");
 
 	switch(opcion)
